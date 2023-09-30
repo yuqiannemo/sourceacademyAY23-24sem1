@@ -1,0 +1,119 @@
+function make_ring(state, id) { 
+    return pair(state, id); 
+} 
+ 
+
+function ring_state(ring) { 
+    return head(ring); 
+} 
+ 
+
+function ring_id(ring) { 
+    return tail(ring); 
+}
+
+function make_step(action, id) { 
+    return pair(action, id); 
+} 
+ 
+
+function step_action(step) { 
+    return head(step); 
+} 
+ 
+
+function step_id(step) { 
+    return tail(step); 
+} 
+ 
+
+function step_to_string(step) { 
+    return step_action(step) + 
+            " ring " + 
+            stringify(step_id(step)); 
+} 
+function steps_to_string(steps) { 
+    return accumulate( 
+               (x, y) => x + "\n" + y, 
+               "", 
+               map(step => step_to_string(step), steps) 
+               ); 
+}
+function flip(ring) { 
+    return make_step(ring_state(ring) === "off" 
+                ? "insert" 
+                : "remove", 
+                ring_id(ring));
+}
+
+function check_free_configuration(first_state, rings) { 
+     return is_null(rings) 
+            ? true 
+            : ring_state(head(rings)) === first_state && //头尾分开来看！
+            ring_id(head(rings)) === length(rings) && 
+            tail(accumulate( 
+            (r, p) => pair(head(p) + 1, 
+            tail(p) && 
+            ring_state(r) === "off" && //因为所有的尾巴都只要off就可以，
+            ring_id(r) === head(p)), //而头要单独判断
+            pair(1, true),
+            tail(rings)));
+}
+
+function solve(n) { 
+    return steps_to_free_configuration("off", make_uniform_configuration("on", n));
+}
+
+function make_uniform_configuration(state, n) { 
+ return build_list(i => make_ring(state, n - i), n); 
+}
+
+function steps_to_free_configuration(desired_first_state, rings) { 
+ return is_null(rings) 
+ // base case: empty sequence is free configuration 
+ ? null 
+ : ring_state(head(rings)) === desired_first_state 
+ // first ring is ok: compute steps to make the 
+ // rest into a uniform off sequence 
+ ? steps_to_free_configuration("off", tail(rings)) 
+ // we need to flip the first ring 
+ // (for this, the second ring must be on 
+ // and the rest off) 
+ : append(steps_to_free_configuration("on", 
+ tail(rings)), 
+ pair(flip(head(rings)), 
+ steps_to_free_configuration("off", 
+ make_free_configuration("on", 
+ length(rings) - 1)
+ ) 
+ ) 
+ ); 
+}
+
+function make_free_configuration(first_state, n) { 
+    return n === 0 
+    ? null 
+    : pair(make_ring(first_state, n), 
+    make_uniform_configuration("off", n - 1) 
+    );
+}
+
+steps_to_free_configuration( 
+        "on", list(make_ring("off", 3), 
+                   make_ring("on", 2), 
+                   make_ring("off", 1))); 
+//result: 
+// [["insert", 3], [["insert", 1], [["remove", 2], [["remove", 1], null]]]]
+
+
+
+
+
+
+
+
+
+
+
+
+
