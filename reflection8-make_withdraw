@@ -1,0 +1,58 @@
+function make_withdraw(balance) {
+    
+    function withdraw(amount) {
+        if (balance >= amount) {
+            balance = balance - amount;
+            return balance;
+        } else {
+            return "Insufficient funds";
+        }
+    }
+    return withdraw;
+}
+
+function make_withdraw2(balance, psd) {
+    
+    function withdraw(amount, password) {
+        if (psd === password) {
+            if (balance >= amount) {
+                balance = balance - amount;
+                return balance;
+            } else {
+                return "Insufficient funds";
+            } 
+        } else {
+            //要删掉！！！psd = password;密码要保持是原初的那个
+            return "Wrong password; no withdraw";
+        }
+        
+    }
+    return withdraw;
+}
+
+function make_withdraw3(balance, psd) {
+    let cnt = 0;//为什么要放在外面？？？
+    function withdraw(amount, password) {
+        if (psd === password && cnt < 3) {
+            if (balance >= amount) {
+                balance = balance - amount;
+                return display(balance);
+            } else {
+                return display("Insufficient funds");
+            } 
+        } else {
+            cnt = cnt + 1;
+            return cnt >= 3
+                   ? display("Account disabled")
+                   : display("Wrong password; no withdraw");
+        }
+        
+    }
+    return withdraw;
+}
+
+const W3 = make_withdraw3(100, "11");
+W3(10, "111");
+W3(10, "111");
+W3(10, "111");
+W3(1, "11");
