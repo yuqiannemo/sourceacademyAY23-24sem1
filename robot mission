@@ -1,0 +1,64 @@
+/*const motorB = ev3_motorB();
+const motorC = ev3_motorC();
+const sensor = ev3_ultrasonicSensor();
+const d = 0.1* ev3_ultrasonicSensorDistance(sensor);
+function forward(distance) {
+    const duration = (100/3) * distance;
+    ev3_runForTime(motorB, duration, 500);
+    ev3_runForTime(motorC, duration, 500);
+    ev3_pause(duration + 700);
+}
+function baackward(distance) {
+    const duration = (100/3) * distance;
+    ev3_runForTime(motorB, duration, -500);
+    ev3_runForTime(motorC, duration, -500);
+    ev3_pause(duration + 700);
+}
+
+function turn_left() {
+    const duration = 500;
+    ev3_runForTime(motorC, duration, 500);
+    ev3_pause(duration + 500);
+}
+
+function turn_right() {
+    const duration = 520;
+    ev3_runForTime(motorB, duration, 500);
+    ev3_pause(duration + 500);
+}
+
+const dis = 35;
+forward(d - 10);
+if (math_round(math_random()) === 1) {
+    turn_right();
+    forward(dis);
+    turn_left();
+} else {
+    turn_left();
+    forward(dis);
+    turn_right();
+}
+    
+forward(dis);*/
+
+function k(n) {
+    const a =[];
+    function iter(i) {
+        if (i < n) {
+            iter(i + 1);
+            a[i] = i + 1;
+        }
+        
+    }iter(0);
+        return a;
+}
+k(10);
+
+function swap(x, y) {
+    let temp = x;
+    x = y;
+    y = temp;
+}
+const a = [1, 2, 3];
+swap(a[0], a[1]);
+a;
