@@ -1,0 +1,76 @@
+const motorB = ev3_motorB(); 
+const motorC = ev3_motorC(); 
+const sensor = ev3_ultrasonicSensor(); 
+const colorSensor = ev3_colorSensor();
+function forward(distance) { 
+    const duration = (100/3) * distance; 
+    ev3_runForTime(motorB, duration, 500); 
+    ev3_runForTime(motorC, duration, 500); 
+    ev3_pause(duration + 700); 
+} 
+function backward(distance) { 
+    const duration = (100/3) * distance; 
+    ev3_runForTime(motorB, duration, -500);
+    ev3_runForTime(motorC, duration, -500);
+    ev3_pause(duration + 700); 
+} 
+ 
+function turn_left() { 
+    const duration = 500; 
+    ev3_runForTime(motorC, duration, 500); 
+    ev3_pause(duration + 500); 
+} 
+ 
+function turn_right() { 
+    const duration = 520; 
+    ev3_runForTime(motorB, duration, 500); 
+    ev3_pause(duration + 500); 
+}
+forward(70);
+let pos = 0;
+pos = colorSensor;
+if (pos !== colorSensor) {
+    pos = colorSensor;
+}
+/*function go_to_the_center() {
+    while (true){
+    if (ev3_colorSensorGetColor(colorSensor) === 6){
+        forward(10);
+        if (ev3_colorSensorGetColor(colorSensor) === 5) {
+            forward(20);
+            if(ev3_colorSensorGetColor(colorSensor) === 4) {
+                forward(20);
+                    if(ev3_colorSensorGetColor(colorSensor) === 3) {
+                        forward(20);
+                        if(ev3_colorSensorGetColor(colorSensor) === 2) {
+                            forward(20);
+                        }
+                    }
+            }
+        }
+    } else {
+        turn_left();
+    }
+}*/
+const a = [6,5,4,3,2,2,5];
+let pointer = 0;
+function go_center() {
+    while(true) {
+        if(pointer === 6) {
+            if(ev3_colorSensorGetColor(colorSensor) !== 5) {
+                go_center();
+                pointer = 5;
+            }
+        }
+        else if (a[pointer + 1] === ev3_colorSensorGetColor(colorSensor)) {
+            forward(20);
+            pointer = pointer + 1;
+        } else if (a[pointer - 1] === ev3_colorSensorGetColor(colorSensor)) {
+            backward(20);
+            pointer = pointer + 1;
+        } else {
+            forward(20);
+            pointer = pointer + 1;
+        }
+    }
+}
