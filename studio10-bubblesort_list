@@ -1,0 +1,25 @@
+function bubblesort_list(L) {
+    // Your solution here.
+    if (is_null(L)) {
+        return null;
+    } else {
+        let wish = bubblesort_list(tail(L));
+        let h = head(L);
+        for(let i = 0; i < length(L) - 1; i = i + 1) {
+            if(h < head(wish)) {
+                break;
+            } else {
+                const t = head(wish);
+                set_head(wish, h);
+                h = t;
+                display_list(L);
+                bubblesort_list(wish);
+            }
+        }
+        return L;
+    }
+}
+
+const LL = list(3, 5, 2, 4, 1);
+bubblesort_list(LL);
+LL; // should show [1, [2, [3, [4, [5, null]]]]]
