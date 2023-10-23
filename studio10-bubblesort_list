@@ -1,23 +1,18 @@
 function bubblesort_list(L) {
     // Your solution here.
-    if (is_null(L)) {
-        return null;
-    } else {
-        let wish = bubblesort_list(tail(L));
-        let h = head(L);
-        for(let i = 0; i < length(L) - 1; i = i + 1) {
-            if(h < head(wish)) {
-                break;
-            } else {
-                const t = head(wish);
-                set_head(wish, h);
-                h = t;
-                display_list(L);
-                bubblesort_list(wish);
-            }
+    let xs = L;
+    for (let i = length(L) - 1; i >= 1; i = i - 1) {
+    for (let j = 0; j < i; j = j + 1) {
+        if (head(xs) > head(tail(xs))) {
+            const temp = head(xs);
+            set_head(xs, head(tail(xs)));
+            set_head(tail(xs), temp);
         }
-        return L;
+        xs = tail(xs);
     }
+    xs = L;
+    }
+//改成list就可以啦！
 }
 
 const LL = list(3, 5, 2, 4, 1);
