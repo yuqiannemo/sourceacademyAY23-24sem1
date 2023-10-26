@@ -1,0 +1,40 @@
+function partial_sums(s) {
+    // YOUR SOLUTION HERE
+    let ans = 0;
+    function helper(cnt) {
+        ans = ans + head(s);
+        s = stream_tail(s);
+        return pair(ans, () => helper(cnt + 1));
+    }
+    return helper(0);
+}
+
+
+function add_streams(s1, s2) {
+    return is_null(s1)
+            ? s2
+            : is_null(s2)
+            ? s1
+            : pair(head(s1) + head(s2),
+            () => add_streams(stream_tail(s1),
+            stream_tail(s2)));
+}
+
+function make_inf(x) {
+    return pair(x, () => make_inf(x));
+}
+
+function p_sums_using_add_streams(s) {
+    let inf = make_inf(0);
+    function helper(cnt) {
+        if (is_null(s)) {
+            return 0;
+        }
+        inf = add_streams(inf, make_inf(head(s)));
+        s = stream_tail(s);
+        return pair(head(inf), () => helper(cnt + 1));
+    }
+    return helper(0);
+}
+
+eval_stream(p_sums_using_add_streams(pair(1, () => pair(2, () => pair(10, () => null)))), 3);
