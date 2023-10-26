@@ -1,0 +1,23 @@
+function zip_list_of_streams(s) {
+    // YOUR SOLUTION HERE
+    const l = length(s);
+    function zip_helper(cnt) {
+        return pair(stream_ref(list_ref(s, cnt % l), math_floor(cnt / l)), () => zip_helper(cnt + 1));
+    }
+    return zip_helper(0);
+}
+const s = list(integers_from(1), integers_from(100), integers_from(1000));
+
+eval_stream(zip_list_of_streams(s), 10);
+
+/*function zip_streams(s1, s2) {
+    // YOUR SOLUTION HERE
+    function zip_helper(cnt) {
+        if (cnt % 2 === 1) {
+            return pair(stream_ref(s2, (cnt - 1) / 2), () => zip_helper(cnt + 1));
+        } else {
+            return pair(stream_ref(s1, cnt / 2), () => zip_helper(cnt + 1));
+        }
+    }
+    return zip_helper(0);
+}*/
