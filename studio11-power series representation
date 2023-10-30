@@ -72,7 +72,7 @@ function alt_ones4() {
                     : -1, () => iter(x + 1));
     }
     return iter(0);
-}
+}// 可以直接用stream map，然后使用（-1）^x次方
 eval_stream(alt_ones3_rewrite(), 10);
 
 
@@ -82,7 +82,7 @@ const zeros1 = alt_ones21(0);
 const zeros2 = scale_series(0, alt_ones4());
 const zeros3 = add_series(alt_ones4(), stream_tail(alt_ones4()));
 const zeros4 = pair(0, () => mul_streams(zeros4, alt_ones4()));
-eval_stream(zeros4, 10);
+eval_stream(zeros4, 10); 
 const s1 = pair(1, () => s1);
 const s2 = integers_from(1);
 eval_stream(s1, 10);
@@ -105,6 +105,3 @@ function print(series) {
 // Turn in your definitions and a couple of coefficient printouts to demonstrate that they work.CS1101S, Semester I, 2023/2024— S11 3
 
 display_list(eval_stream(print(s2), 10));
-
-
-
