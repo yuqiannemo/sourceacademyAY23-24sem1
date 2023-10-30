@@ -1,0 +1,110 @@
+function scale_stream(c, stream) {
+    return stream_map(x => c * x, stream);
+}
+
+function mul_streams(a,b) {
+    return pair(head(a) * head(b),
+                () => mul_streams(stream_tail(a), stream_tail(b)));
+}
+
+function add_streams(s1, s2) {
+    return is_null(s1)
+           ? s2
+           : is_null(s2)
+           ? s1
+           : pair(head(s1) + head(s2),
+                  () => add_streams(stream_tail(s1),
+                            stream_tail(s2)));
+}
+
+const add_series = add_streams;
+const non_neg_integers = integers_from(0);
+const scale_series = scale_stream;
+
+function negate_series(s) {
+    return scale_series(-1, s);
+}
+
+function subtract_series(s1, s2) {
+return add_series(s1, negate_series(s2));
+}
+
+function coeffs_to_series(list_of_coeffs) {
+    const zeros = pair(0, () => zeros);
+    function iter(list) {
+        return is_null(list)
+        ? zeros
+        : pair(head(list),
+               () => iter(tail(list)));
+    }
+    return iter(list_of_coeffs);
+}
+
+function fun_to_series(fun) {
+    return stream_map(fun, non_neg_integers);
+}
+
+function alt_ones1() {
+    return pair(1, () => pair(-1, () => alt_ones1()));
+}
+function alt_ones21(x) {
+    return pair(x, () => negate_series(alt_ones21(x)));
+}
+
+function alt_ones2() {
+    return pair(1, () => negate_series(alt_ones2()));
+}
+
+const s = pair(-2, () => pair(2, () => s));
+function alt_ones3() {
+    return pair(1, () => add_series(s, alt_ones3()));
+}
+
+function alt_ones3_rewrite() {
+    return pair(1, () => add_series(scale_series(-2, alt_ones3_rewrite()),
+                             alt_ones3_rewrite()));
+}
+
+function alt_ones4() {
+    function iter(x) {
+        return pair(x % 2 === 0
+                    ? 1
+                    : -1, () => iter(x + 1));
+    }
+    return iter(0);
+}
+eval_stream(alt_ones3_rewrite(), 10);
+
+
+const zeros1 = alt_ones21(0);
+
+//const zeros2 = pair(0, () => pair(0, () => add_series(stream_tail(zeros2), zeros2)));
+const zeros2 = scale_series(0, alt_ones4());
+const zeros3 = add_series(alt_ones4(), stream_tail(alt_ones4()));
+const zeros4 = pair(0, () => mul_streams(zeros4, alt_ones4()));
+eval_stream(zeros4, 10);
+const s1 = pair(1, () => s1);
+const s2 = integers_from(1);
+eval_stream(s1, 10);
+
+function print(series) {
+    function iter(n) {
+        return pair("+" +
+                     stringify(stream_ref(series, n)) + "x^" + stringify(n),
+                     () => iter(n + 1));
+    }
+    return pair(head(series), () => iter(1));
+}
+// To get some initial practice with streams, write definitions for each of the following:
+// • alt_ones: the stream 1, −1, 1, −1, . . . in as many ways as you can think of.
+// • zeros: the infinite stream of 0’s. Do this using alt_ones in as many ways as you can
+// think of.
+// Now, show how to define the series:
+// S1 = 1 + x + x2 + x3 + ⋯
+// S2 = 1 + 2x + 3x2 + 4x3 + ⋯
+// Turn in your definitions and a couple of coefficient printouts to demonstrate that they work.CS1101S, Semester I, 2023/2024— S11 3
+
+display_list(eval_stream(print(s2), 10));
+
+
+
