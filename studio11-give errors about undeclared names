@@ -18,7 +18,10 @@ function evaluate(program) {
     let S = null;
     let E = the_global_environment;
 
-   
+   function scan_first() {
+    let C = list(make_block(program));
+    let S = null;
+    let E = the_global_environment;
     while (! is_null(C)) {
         const command = head(C);
         C = tail(C);
@@ -117,10 +120,12 @@ function evaluate(program) {
                       logical_composition_second_component(command)),
                 C);
         } else if (is_return_statement(command)) {
+            continue;
             C = pair(return_expression(command),
                   pair(make_return_instruction(),
                     C));
         } else if (is_while_loop(command)) {
+            continue;
             C = pair(
                   make_conditional_statement(
                     while_loop_predicate(command),
@@ -130,6 +135,7 @@ function evaluate(program) {
                     make_sequence(null)),
                   C);
         } else if (is_for_loop(command)) {
+            continue;
             C = pair(
                   make_block(
                     make_sequence(
@@ -165,9 +171,9 @@ function evaluate(program) {
                         
         
     }}
+   } 
         
-        
-        
+        scan_first();
         
         while (! is_null(C)) {
         display_control(C);
