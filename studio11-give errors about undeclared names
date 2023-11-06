@@ -936,6 +936,9 @@ function lookup_symbol_value(symbol, env) {
                    : scan(tail(symbols), tail(vals));
         }
         if (env === the_empty_environment) {
+            if (!is_null(symbol, list_of_unassigned)) {
+                
+            }
             error(symbol, "unbound name");
         } else {
             const frame = first_frame(env);
