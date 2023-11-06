@@ -42,7 +42,7 @@ function evaluate(program) {
             const body = sequence_statements(command);
             C = is_null(body)
                 ? pair(make_literal(undefined), C)
-                : is_null(tail(body))
+                : is_null(tail(body)) 
                 ? pair(head(body), C)
                 : pair(head(body),
                     pair(make_pop_instruction(),
