@@ -17,7 +17,159 @@ function evaluate(program) {
     let C = list(make_block(program));
     let S = null;
     let E = the_global_environment;
+
+   
     while (! is_null(C)) {
+        const command = head(C);
+        C = tail(C);
+        
+        // expressions and statements
+        if (is_literal(command)) {
+            S = pair(literal_value(command), S);
+        } else if (is_binary_operator_combination(command)) {
+            C = pair(first_operand(command),
+                 pair(second_operand(command),
+                  pair(make_binary_operator_instruction(
+                   operator_symbol(command)),
+                   C)));
+        } else if (is_unary_operator_combination(command)) {
+            C = pair(first_operand(command),
+                  pair(make_unary_operator_instruction(
+                   operator_symbol(command)),
+                   C));
+        } else if (is_sequence(command)) {
+            const body = sequence_statements(command);
+            C = is_null(body)
+                ? pair(make_literal(undefined), C)
+                : is_null(tail(body))
+                ? pair(head(body), C)
+                : pair(head(body),
+                    pair(make_pop_instruction(),
+                      pair(make_sequence(tail(body)),
+                        C)));
+        } else if (is_conditional(command)) {
+            C = pair(conditional_predicate(command),
+                  pair(make_branch_instruction(
+                         conditional_consequent(command),
+                         conditional_alternative(command)),
+                    C));
+        } else if (is_block(command)) {
+            const locals = scan_out_declarations(
+                             block_body(command));
+            const unassigneds = list_of_unassigned(locals);
+            C = pair(block_body(command),
+                  pair(make_env_instruction(E),
+                    C));
+            E = extend_environment(locals, unassigneds, E);
+        } else if (is_function_declaration(command)) {
+            C = pair(function_decl_to_constant_decl(command),
+                     C);
+        } else if (is_declaration(command)) {
+            C = pair(make_assignment(
+                       declaration_symbol(command),
+                       declaration_value_expression(command)),
+                     C);
+        } else if (is_name(command)) {
+            S = pair(lookup_symbol_value(
+                         symbol_of_name(command),
+                         E),
+                     S);
+        } else if (is_assignment(command)) {
+            C = pair(assignment_value_expression(command),
+                  pair(make_assign_instruction(
+                         assignment_symbol(command)),
+                       C));
+        } else if (is_lambda_expression(command)) {
+            S = pair(
+                  is_return_statement(lambda_body(command))
+                  ? make_simple_function(
+                      lambda_parameter_symbols(command),
+                      return_expression(lambda_body(command)),
+                      E)
+                  : make_complex_function(
+                      lambda_parameter_symbols(command),
+                      make_sequence(
+                        list(
+                          lambda_body(command),
+                          make_return_statement(
+                            make_literal(undefined)))),
+                      E),
+                  S);
+        } else if (is_application(command)) {
+            const arg_exprs = arg_expressions(command);
+            C = pair(function_expression(command),
+                  append(arg_exprs, 
+                    pair(make_call_instruction(
+                           length(arg_exprs)), C)));
+                           
+        } else if (is_logical_composition(command)) {
+            C = pair(
+                  logical_symbol(command) === "&&"
+                  ? make_conditional_expression(
+                      logical_composition_first_component(
+                        command),
+                      logical_composition_second_component(
+                        command),
+                      make_literal(false))
+                  : make_conditional_expression(
+                      logical_composition_first_component(command),
+                      make_literal(true),
+                      logical_composition_second_component(command)),
+                C);
+        } else if (is_return_statement(command)) {
+            C = pair(return_expression(command),
+                  pair(make_return_instruction(),
+                    C));
+        } else if (is_while_loop(command)) {
+            C = pair(
+                  make_conditional_statement(
+                    while_loop_predicate(command),
+                    make_sequence(
+                      list(while_loop_body(command),
+                           command)),
+                    make_sequence(null)),
+                  C);
+        } else if (is_for_loop(command)) {
+            C = pair(
+                  make_block(
+                    make_sequence(
+                      list(
+                        for_loop_init(command),
+                        make_while_loop(
+                          for_loop_predicate(command),
+                          make_sequence(
+                            list(
+                              for_loop_body(command),
+                              for_loop_update(command)
+                              )))))), C);
+         } else if (is_array_expression(command)) {
+             const array_expressions = array_elements(command);
+             C = append(array_expressions,
+                   pair(make_array_instruction(
+                          length(array_expressions)),
+                        C));
+         } else if (is_array_access(command)) {
+             C = pair(array_access_array_expression(command),
+                   pair(array_access_index_expression(command),
+                     pair(make_array_access_instruction(),
+                        C)));         
+         } else if (is_array_assignment(command)) {
+             const access = 
+                 array_assignment_access(command);
+             C = pair(array_access_array_expression(access),
+                   pair(array_access_index_expression(access),
+                     pair(array_assignment_value_expression(
+                            command),
+                       pair(make_array_assignment_instruction(),
+                         C)))); 
+                        
+        
+    }}
+        
+        
+        
+        
+        while (! is_null(C)) {
         display_control(C);
         display_stash(S);   
         display_environment(E);
@@ -250,6 +402,7 @@ function evaluate(program) {
     }
     return head(S); 
 }
+
 
 // scan_out_declarations and list_of_unassigned
 // (SICP JS 4.1.1)
@@ -1040,10 +1193,6 @@ a[0] = 40;
 a;
 `);
 */
-
 parse_and_evaluate(`
-function f(x) {
-    12;
-}
-f(49);
+false ? abracadabra(simsalabim) : 42;
 `);
