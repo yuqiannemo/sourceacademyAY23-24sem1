@@ -174,7 +174,7 @@ function evaluate(program) {
    } 
         
         scan_first();
-        
+         
         while (! is_null(C)) {
         display_control(C);
         display_stash(S);   
